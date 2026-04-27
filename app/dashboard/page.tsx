@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/lib/hooks/use-auth';
 import Navbar from '@/components/Navbar';
 import styles from './page.module.css';
 
@@ -115,6 +116,7 @@ function getDemoState(): UserState {
 }
 
 export default function DashboardPage() {
+  const { userEmail } = useAuth();
   const [state, setState] = useState<UserState | null>(null);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -147,6 +149,7 @@ export default function DashboardPage() {
   const generateEmail = useCallback(async () => {
     if (!state) return;
     setIsLoadingEmail(true);
+    let emailContent = '';
     try {
       const res = await fetch('/api/agents/planner', {
         method: 'POST',
@@ -154,12 +157,31 @@ export default function DashboardPage() {
         body: JSON.stringify({ userId: state.userId }),
       });
       const data = await res.json();
-      setEmail(data.user_message);
+      emailContent = data.user_message;
+      setEmail(emailContent);
     } catch {
-      setEmail("Day 12 — and you're still here. That's not nothing.\n\nYesterday you wrestled with matrix operations. Your transpose was clean. Your determinant had an indexing bug.\n\n📖 Study: Eigenvalues & Eigenvectors (30 min)\n🔨 Practice: Today's challenge\n🔄 Review: Python list comprehensions (10 min)\n\n🔥 Day 12. Top 15% of learners. Keep building.");
+      emailContent = "Day 12 — and you're still here. That's not nothing.\n\nYesterday you wrestled with matrix operations. Your transpose was clean. Your determinant had an indexing bug.\n\n📖 Study: Eigenvalues & Eigenvectors (30 min)\n🔨 Practice: Today's challenge\n🔄 Review: Python list comprehensions (10 min)\n\n🔥 Day 12. Top 15% of learners. Keep building.";
+      setEmail(emailContent);
     }
+
+    if (userEmail && emailContent) {
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: userEmail,
+            subject: `📌 Day ${state.consistency.streak_days} — Your learning plan is ready`,
+            text: emailContent
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to send email:', err);
+      }
+    }
+
     setIsLoadingEmail(false);
-  }, [state]);
+  }, [state, userEmail]);
 
   if (!state) {
     return (

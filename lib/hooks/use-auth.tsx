@@ -25,6 +25,7 @@ interface AuthContextType {
   signup: (name: string, email: string, pass: string) => Promise<void>;
   isAuthenticated: boolean;
   isLoading: boolean;
+  userEmail: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -85,7 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout, 
       signup, 
       isAuthenticated: !!user,
-      isLoading
+      isLoading,
+      userEmail: user?.email || null
     }}>
       {!isLoading && children}
     </AuthContext.Provider>
