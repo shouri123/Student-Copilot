@@ -1,0 +1,208 @@
+/* ── Quiz Styles ──────────────────────────────────────────────────────────── */
+
+.quiz {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Progress */
+.quizProgress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+.quizCounter {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Question Card */
+.questionCard {
+  width: 100%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+.questionText {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  width: 100%;
+}
+.option:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.05);
+}
+.optionLetter {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.optionSelected {
+  border-color: var(--accent-blue);
+}
+.optionCorrect {
+  border-color: var(--accent-emerald) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+.optionCorrect .optionLetter {
+  background: var(--accent-emerald);
+  color: white;
+}
+.optionWrong {
+  border-color: var(--accent-rose) !important;
+  background: rgba(244, 63, 94, 0.08) !important;
+}
+.optionWrong .optionLetter {
+  background: var(--accent-rose);
+  color: white;
+}
+
+/* Explanation */
+.explanation {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-top: 20px;
+}
+.explanationCorrect {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.explanationWrong {
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+}
+.explanationIcon {
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.explanationCorrect .explanationIcon { color: var(--accent-emerald); }
+.explanationWrong .explanationIcon { color: var(--accent-rose); }
+.explanation h4 {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.explanation p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Results */
+.resultCard {
+  width: 100%;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.resultScore {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.resultNumber {
+  font-size: var(--text-5xl);
+  font-weight: 900;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.resultPct {
+  font-size: var(--text-2xl);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.resultTitle {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.resultMessage {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  max-width: 450px;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+.resultBreakdown {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+.resultItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+.resultCorrect {
+  background: rgba(16, 185, 129, 0.06);
+  color: var(--accent-emerald);
+}
+.resultWrong {
+  background: rgba(244, 63, 94, 0.06);
+  color: var(--accent-rose);
+}
+
+@media (max-width: 768px) {
+  .questionCard {
+    padding: 24px;
+  }
+  .resultCard {
+    padding: 24px;
+  }
+}

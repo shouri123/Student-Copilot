@@ -1,0 +1,259 @@
+/* ── Landing Page Styles ──────────────────────────────────────────────────── */
+
+.landing {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Floating Orbs */
+.orb1, .orb2, .orb3 {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+}
+.orb1 {
+  width: 600px; height: 600px;
+  background: rgba(59, 130, 246, 0.08);
+  top: -200px; left: -200px;
+  animation: float 8s ease-in-out infinite;
+}
+.orb2 {
+  width: 500px; height: 500px;
+  background: rgba(139, 92, 246, 0.06);
+  top: 40%; right: -150px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+.orb3 {
+  width: 400px; height: 400px;
+  background: rgba(6, 182, 212, 0.05);
+  bottom: -100px; left: 30%;
+  animation: float 12s ease-in-out infinite;
+}
+
+/* Nav */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 0;
+  background: rgba(5, 8, 16, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.navInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logoIcon {
+  font-size: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logoText {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+}
+.heroContent {
+  max-width: 800px;
+}
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--accent-blue);
+  margin-bottom: 32px;
+}
+.badgeDot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+  animation: pulse 2s infinite;
+}
+.heroTitle {
+  font-size: var(--text-7xl);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+.heroGradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.heroSubtitle {
+  font-size: var(--text-xl);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.heroCTA {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.heroCaption {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Sections */
+.sectionTitle {
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.sectionSubtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
+}
+
+/* Philosophy */
+.philosophy {
+  padding: 100px 0;
+}
+.principleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+.principleCard {
+  padding: 32px;
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+.principleCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--glass-border-hover);
+}
+.principleIcon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 16px;
+}
+.principleTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.principleDesc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Agents */
+.agents {
+  padding: 100px 0;
+}
+.agentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.agentCard {
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.agentCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--agent-color);
+  opacity: 0.8;
+}
+.agentDot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--agent-color);
+  margin-bottom: 16px;
+  box-shadow: 0 0 12px var(--agent-color);
+}
+.agentName {
+  font-size: var(--text-base);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.agentDesc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* Final CTA */
+.finalCTA {
+  padding: 120px 0;
+  text-align: center;
+}
+.ctaTitle {
+  font-size: var(--text-4xl);
+  font-weight: 800;
+  margin-bottom: 32px;
+  letter-spacing: -0.02em;
+}
+
+/* Footer */
+.footer {
+  padding: 40px 0;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+}
+.footer p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .principleGrid, .agentGrid {
+    grid-template-columns: 1fr;
+  }
+  .heroTitle {
+    font-size: var(--text-5xl);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .principleGrid, .agentGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
