@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { runAgent } from '../../../../lib/agents/engine';
 import { getUserState, updateUserState, initializeUser } from '../../../../lib/state/store';
+import { AgentType } from '../../../../lib/types';
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: { module: string } }
+) {
   try {
+    const agentModule = params.module as AgentType;
     const body = await request.json();
-    const { userId } = body;
+    const { userId, userName, context } = body;
 
     if (!userId) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 });
@@ -13,12 +18,11 @@ export async function POST(request: Request) {
 
     let state = getUserState(userId);
     if (!state) {
-      state = initializeUser(userId);
+      state = initializeUser(userId, userName);
     }
 
-    const response = await runAgent('challenge', state, {
-      challenge_history: state.challenge_history || [],
-    });
+    // Pass the context object dynamically to the agent
+    const response = await runAgent(agentModule, state, context || {});
 
     if (response.state_updates && Object.keys(response.state_updates).length > 0) {
       updateUserState(userId, response.state_updates);
@@ -26,7 +30,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Challenge agent error:', error);
+    console.error(`Agent module error (${params.module}):`, error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

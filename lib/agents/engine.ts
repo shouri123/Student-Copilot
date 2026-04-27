@@ -96,22 +96,27 @@ function parseAgentResponse(rawText: string, agentType: AgentType, userGoal?: st
 
 /**
  * Run the full daily orchestration pipeline:
- * SkillGap → Challenge → Planner
+ * SkillGap → Memory → Planner → Challenge
  */
 export async function runDailyOrchestration(userState: UserState): Promise<{
   skillGap: AgentResponse;
-  challenge: AgentResponse;
+  memory: AgentResponse;
   planner: AgentResponse;
+  challenge: AgentResponse;
 }> {
   const skillGap = await runAgent('skill_gap', userState);
+  const memory = await runAgent('memory', userState, {
+    recent_events: skillGap.user_message,
+  });
+  const planner = await runAgent('planner', userState, {
+    memory_updates: memory.user_message,
+    current_phase_topics: userState.goal.phases?.find(p => p.status === 'active')?.topics || [],
+  });
   const challenge = await runAgent('challenge', userState, {
+    today_plan: planner.user_message,
     top_gap: skillGap.user_message,
     challenge_history: userState.challenge_history || [],
   });
-  const planner = await runAgent('planner', userState, {
-    today_challenge: challenge.user_message,
-    current_phase_topics: userState.goal.phases?.find(p => p.status === 'active')?.topics || [],
-  });
 
-  return { skillGap, challenge, planner };
+  return { skillGap, memory, planner, challenge };
 }

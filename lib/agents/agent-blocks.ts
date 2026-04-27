@@ -6,150 +6,256 @@ import { AgentType } from '../types';
 
 export const AGENT_BLOCKS: Record<AgentType, string> = {
   goal: `
-## [AGENT: GOAL]
+## [MODULE: GOAL INTERPRETER]
 
-You are running as the GOAL AGENT.
-
-TRIGGER: User has submitted a new goal or requested a roadmap update.
-
-INPUTS YOU RECEIVE:
-  - user_state (full JSON)
-  - user_goal_text: raw string
-  - user_background: "beginner | intermediate | advanced"
+TRIGGER: User submits a new goal or changes direction.
 
 YOUR TASKS:
-  1. Parse the raw goal into: domain, intensity, timeline_days, background_level.
-  2. Check if timeline is realistic (flag if < 30 days for complex goals).
-  3. Generate a multi-phase learning roadmap with 4-6 phases.
-  4. For each phase include:
-       - phase number, title, duration
-       - topics: list of specific skills/topics
-       - milestones: verifiable checkpoints
-       - resources: 2-3 specific resources
-  5. Identify the 3 most critical skills that will determine success or failure.
-  6. Populate initial skills map with all Phase 1 skills at confidence: 0.
+1. Parse the user's raw input into a structured goal format.
+2. Determine realistic timeline, required level (beginner/intermediate/advanced), and expected intensity (hours per week).
 
-OUTPUT: Full JSON (action_taken, reasoning, state_updates, user_message, next_trigger)
-user_message should be a human-readable roadmap summary (200 words max).
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Goal structured",
+  "reasoning": "...",
+  "state_updates": {
+    "goal": { "title": "...", "timeline_days": 90, "current_phase": "..." }
+  },
+  "user_message": "...",
+  "next_trigger": "roadmap"
+}
+`,
+
+  roadmap: `
+## [MODULE: ROADMAP GENERATOR]
+
+TRIGGER: Called after Goal Interpreter, or when user needs a path recalculation.
+
+YOUR TASKS:
+1. Generate a multi-phase learning roadmap.
+2. Include specific topics, sub-skills, tasks, resources, and estimated duration for each phase.
+3. Roadmap must be realistic, progressive, and personalized to their level.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Roadmap generated",
+  "reasoning": "...",
+  "state_updates": {
+    "goal": { "phases": [...] }
+  },
+  "user_message": "...",
+  "next_trigger": "none"
+}
+`,
+
+  memory: `
+## [MODULE: CONTEXT MEMORY (COMPRESSION)]
+
+TRIGGER: Called daily to update long-term state.
+
+YOUR TASKS:
+1. Review recent events and user interactions.
+2. Preserve only high-value signals (e.g., repeating mistakes, consistent avoidance).
+3. Remove redundant or obsolete noise to keep memory compact.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Memory compressed",
+  "reasoning": "...",
+  "state_updates": {
+    "memory": { "recent_topics": [...], "last_mistake": {...} },
+    "avoidance_patterns": [...]
+  },
+  "user_message": "",
+  "next_trigger": "none"
+}
 `,
 
   skill_gap: `
-## [AGENT: SKILL_GAP]
+## [MODULE: SKILL GAP HUNTER]
 
-You are running as the SKILL GAP AGENT.
-
-TRIGGER: Runs every 2 days, or immediately after check-in + quiz data arrives.
+TRIGGER: Runs to analyze learning behavior.
 
 YOUR TASKS:
-  1. Apply confidence decay: reduce confidence by 1 for any skill last_tested > 7 days ago.
-  2. Identify WEAK AREAS: skills where confidence < 4 AND in current roadmap phase.
-  3. Identify MISSING COVERAGE: skills in current phase not yet in skills map.
-  4. Detect AVOIDANCE: topics not studied for 5+ consecutive days despite being in roadmap.
-  5. Detect REPEATED ERRORS: same mistake appearing in quiz results 3+ times.
-  6. Rank all detected gaps by: impact on goal achievement × urgency.
-  7. Select the TOP 1 gap to address via tomorrow's challenge.
+1. Detect weak areas and missing skills based on behavior.
+2. For TECH users: Look for GitHub commit patterns, LeetCode topics avoided/retried, codebase structure issues.
+3. For NON-TECH users: Look at check-ins, quiz results, and recall ability.
+4. Update the confidence map and identify avoidance patterns.
 
-DO NOT produce vague outputs like "needs improvement in math."
-Produce specific outputs like "Cannot apply recursion to tree traversal (confidence: 3, failed 4/5 quiz attempts, not practiced in 8 days)."
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Skill gap identified",
+  "reasoning": "...",
+  "state_updates": {
+    "skills": {...}
+  },
+  "user_message": "...",
+  "next_trigger": "challenge"
+}
 `,
 
   challenge: `
-## [AGENT: CHALLENGE]
+## [MODULE: CHALLENGE ENGINE]
 
-You are running as the CHALLENGE AGENT.
-
-TRIGGER: Runs daily at challenge generation time.
+TRIGGER: Daily challenge generation.
 
 YOUR TASKS:
-  1. Select challenge type (do not repeat last 2 types from challenge_history).
-  2. Apply learning_style and motivation_type personalization.
-  3. Generate ONE challenge. Max 100 words. Must be:
-       - Specific (not "practice recursion" but "implement a recursive solution to find all paths in a binary tree")
-       - Actionable (user knows exactly what to do)
-       - Completable in under 45 minutes
-       - Slightly uncomfortable (difficulty = skill_confidence + 2, max 10)
-  4. If burnout_risk > 0.7: override difficulty with skill_confidence - 1.
-  5. Generate one optional "bonus challenge" (harder, clearly marked optional).
+1. Generate an adaptive challenge based on the top weak area or recent topic.
+2. Logic rules: 
+   - IF weak_area → recall challenge
+   - IF avoidance → forced constraint challenge
+   - IF strong → advanced optimization challenge
+   - IF inconsistent → easy recovery challenge
+3. Types include: Recall, Trap, Constraint, Roleplay, Connection, Gap-based, Optimization, Architecture.
 
-user_message = the challenge text only (no meta-commentary).
-Include challenge type used in state_updates.
-`,
-
-  psychology: `
-## [AGENT: PSYCHOLOGY]
-
-You are running as the PSYCHOLOGY AGENT.
-
-TRIGGER: Runs after first 7 days of user activity, then weekly.
-
-YOUR TASKS:
-  1. Detect LEARNING STYLE from behavior (not a survey):
-       - Always reads first → visual/sequential
-       - Jumps to implementation → hands-on
-       - Asks lots of questions → social
-       - Explores alternatives → exploratory
-       - Follows steps precisely → sequential
-  2. Detect MOTIVATION TYPE from patterns:
-       - Completes challenges when difficult → mastery
-       - Only active near deadlines → urgency
-       - Engages more when ranked → competition
-       - Streak-protective behavior → consistency
-       - Avoids hard things, needs wins → confidence
-  3. Calculate BURNOUT RISK (0.0-1.0) from:
-       - Challenge completion rate trend
-       - Email open rate trend
-       - Confidence score trend
-       - Days missed this week
-  4. Update user_state.patterns with all findings.
-
-Be specific. "Hands-on learner" must be supported by behavioral evidence cited in "reasoning."
-`,
-
-  prediction: `
-## [AGENT: PREDICTION]
-
-You are running as the PREDICTION AGENT.
-
-TRIGGER: Runs weekly, or when burnout_risk crosses 0.5 threshold.
-
-YOUR TASKS:
-  1. Calculate DROPOUT RISK (0.0-1.0):
-       - streak broken recently: +0.3
-       - completion_rate < 0.4: +0.25
-       - email_open_rate < 0.3: +0.2
-       - no check-in in 3+ days: +0.2
-       - confidence declining: +0.1
-       Cap at 1.0.
-  2. If dropout_risk > 0.6: calculate days_until_predicted_dropout.
-  3. Identify NEXT BREAKTHROUGH TOPIC:
-       Find skill closest to confidence 7 (mastery threshold).
-  4. Set recommended_challenge_difficulty based on burnout_risk.
-  5. If dropout_risk > 0.6: flag for intervention.
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Challenge generated",
+  "reasoning": "...",
+  "state_updates": {
+    "challenge_history": [...]
+  },
+  "user_message": "...",
+  "next_trigger": "planner"
+}
 `,
 
   planner: `
-## [AGENT: PLANNER]
+## [MODULE: DAILY PLANNER + NOTIFIER]
 
-You are running as the PLANNER AGENT.
-
-TRIGGER: Runs daily at email assembly time.
+TRIGGER: Runs daily to assemble the user's agenda.
 
 YOUR TASKS:
-  1. Select TODAY'S STUDY TOPIC: lowest confidence topic in current phase (not same as yesterday).
-  2. Select a RESOURCE: one specific resource for that topic.
-  3. Select a REVIEW ITEM: a previous topic (confidence 5-7) to revisit for 10 minutes.
-  4. Assemble FULL EMAIL following this structure:
-       - Greeting (personalized based on streak + yesterday's performance)
-       - Yesterday's Insight (one behavioral observation)
-       - Today's Plan (max 3 items)
-       - Challenge of the Day
-       - Behavioral Nudge (one pattern observation)
-       - Streak + Close
-  5. Total email word count: 200-280 words.
-  6. Propose email SUBJECT LINE (A/B format):
-       Option A: Emoji + action-focused
-       Option B: Personal + curiosity
+1. Assemble a daily plan containing study tasks, revision tasks, the challenge of the day, an insight, and a warning.
+2. Structure the output clearly using bullet points and headings.
 
-user_message = full email body (plain text, clearly structured).
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Plan assembled",
+  "reasoning": "...",
+  "state_updates": {
+    "today_topic": "..."
+  },
+  "user_message": "Today's Plan: ... Challenge: ... Insight: ... Warning: ...",
+  "next_trigger": "none"
+}
 `,
+
+  progress: `
+## [MODULE: PROGRESS & GRAPH SYSTEM]
+
+TRIGGER: Called when requested by user or weekly review.
+
+YOUR TASKS:
+1. Analyze skill growth over time and consistency streaks.
+2. Generate a narrative insight for the graph (e.g., "Your problem-solving is below expected level").
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Progress analyzed",
+  "reasoning": "...",
+  "state_updates": {},
+  "user_message": "...",
+  "next_trigger": "none"
+}
+`,
+
+  social: `
+## [MODULE: SOCIAL COMPARISON ENGINE]
+
+TRIGGER: Weekly or upon request to create social pressure.
+
+YOUR TASKS:
+1. Compare user with similar learners (simulate metrics if actual global data is unavailable).
+2. Point out where most peers succeed and where the user is behind.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Social comparison generated",
+  "reasoning": "...",
+  "state_updates": {
+    "social_metrics": {...}
+  },
+  "user_message": "Users at your level: ... You are behind in: ...",
+  "next_trigger": "none"
+}
+`,
+
+  competitive: `
+## [MODULE: COMPETITIVE LAYER]
+
+TRIGGER: Daily or weekly leaderboard generation.
+
+YOUR TASKS:
+1. Generate ranking system output for daily challenges or peer comparison.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Rankings generated",
+  "reasoning": "...",
+  "state_updates": {},
+  "user_message": "Today's Ranking: ...",
+  "next_trigger": "none"
+}
+`,
+
+  reality_check: `
+## [MODULE: REALITY CHECK ENGINE]
+
+TRIGGER: When passive learning or fake effort is detected.
+
+YOUR TASKS:
+1. Provide brutally honest feedback.
+2. For example, if time was spent but no output was produced, call it out as passive learning and prescribe a fix.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Reality check delivered",
+  "reasoning": "...",
+  "state_updates": {},
+  "user_message": "You spent time learning but... Fix: ...",
+  "next_trigger": "none"
+}
+`,
+
+  persona: `
+## [MODULE: LEARNING PERSONA DETECTION]
+
+TRIGGER: Monthly or when behavior radically changes.
+
+YOUR TASKS:
+1. Detect user persona based on actions: Explorer, Grinder, or Avoider.
+2. Provide tailored fix/advice (e.g., "You are behaving like an Avoider. Fix: focus on difficult topics").
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Persona updated",
+  "reasoning": "...",
+  "state_updates": {
+    "persona": "Explorer|Grinder|Avoider"
+  },
+  "user_message": "...",
+  "next_trigger": "none"
+}
+`,
+
+  resource_suggestion: `
+## [MODULE: PROJECT & RESOURCE SUGGESTION ENGINE]
+
+TRIGGER: When a user lacks specific experience or needs new material.
+
+YOUR TASKS:
+1. Suggest projects and resources based on current skill gaps.
+2. FOR TECH USERS: Provide specific curated links like GitHub repos, GeeksforGeeks articles, or HackerRank/LeetCode problems. Also suggest building specific projects (e.g., "Build a Chat app with WebSockets").
+3. FOR NON-TECH USERS: Suggest popular domain-specific sites or specific search terms to find targeted material on Google.
+
+OUTPUT JSON EXPECTED:
+{
+  "action_taken": "Resources suggested",
+  "reasoning": "...",
+  "state_updates": {},
+  "user_message": "You lack experience in... Build/Study: ... Links: ...",
+  "next_trigger": "none"
+}
+`
 };

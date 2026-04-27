@@ -18,7 +18,19 @@ export type ChallengeType =
   | 'debugging'
   | 'design';
 
-export type AgentType = 'goal' | 'skill_gap' | 'challenge' | 'psychology' | 'prediction' | 'planner';
+export type AgentType = 
+  | 'goal' 
+  | 'roadmap' 
+  | 'memory' 
+  | 'skill_gap' 
+  | 'challenge' 
+  | 'planner' 
+  | 'progress' 
+  | 'social' 
+  | 'competitive' 
+  | 'reality_check' 
+  | 'persona' 
+  | 'resource_suggestion';
 
 export interface SkillData {
   confidence: number; // 0-10
@@ -95,6 +107,11 @@ export interface UserState {
   last_email_sent?: string;
   today_topic?: string;
   created_at?: string;
+  persona?: 'Explorer' | 'Grinder' | 'Avoider' | 'Unknown';
+  social_metrics?: {
+    peer_percentile: number;
+    consistency_vs_peers: number;
+  };
 }
 
 export interface AgentResponse {
