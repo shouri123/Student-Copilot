@@ -1,14 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { runAgent } from '../../../../lib/agents/engine';
 import { getUserState, updateUserState, initializeUser } from '../../../../lib/state/store';
 import { AgentType } from '../../../../lib/types';
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ module: string }> }
 ) {
+  let resolvedModuleName = 'unknown';
   try {
     const resolvedParams = await params;
+    resolvedModuleName = resolvedParams.module;
     const agentModule = resolvedParams.module as AgentType;
     const body = await request.json();
     const { userId, userName, context } = body;
@@ -31,7 +33,7 @@ export async function POST(
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error(`Agent module error (${params.module}):`, error);
+    console.error(`Agent module error (${resolvedModuleName}):`, error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
