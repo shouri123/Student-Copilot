@@ -11,7 +11,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// During Next.js build on Vercel, env vars might be missing, so we provide a fallback
+const app = getApps().length > 0 ? getApp() : initializeApp({
+  ...firebaseConfig,
+  apiKey: firebaseConfig.apiKey || "demo-api-key-to-pass-build",
+  authDomain: firebaseConfig.authDomain || "demo.firebaseapp.com",
+  projectId: firebaseConfig.projectId || "demo-project",
+});
+
 const auth = getAuth(app);
 
 export { app, auth };
