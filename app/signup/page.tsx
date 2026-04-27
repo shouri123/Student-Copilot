@@ -102,7 +102,7 @@ export default function SignupPage() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>Choose Access Key</label>
+            <label htmlFor="password" className={styles.label}>Password</label>
             <input
               type="password"
               id="password"

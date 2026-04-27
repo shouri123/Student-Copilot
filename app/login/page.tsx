@@ -72,7 +72,7 @@ export default function LoginPage() {
 
           <div className={styles.field}>
             <div className={styles.labelRow}>
-              <label htmlFor="password" className={styles.label}>Access Key</label>
+              <label htmlFor="password" className={styles.label}>Password</label>
               <Link href="#" className={styles.forgot}>Forgot?</Link>
             </div>
             <input
