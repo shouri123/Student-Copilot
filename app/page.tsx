@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/components/Navbar';
 import styles from './page.module.css';
 
 export default function LandingPage() {
@@ -20,21 +21,7 @@ export default function LandingPage() {
       <div className={styles.orb2} />
       <div className={styles.orb3} />
 
-      {/* Nav */}
-      <nav className={styles.nav}>
-        <div className={styles.navInner}>
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>◆</span>
-            <span className={styles.logoText}>StudentCopilot</span>
-          </div>
-          <button
-            className="btn btn-ghost"
-            onClick={() => router.push('/dashboard')}
-          >
-            Dashboard →
-          </button>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero */}
       <section className={styles.hero}>

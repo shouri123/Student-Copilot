@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Navbar from '@/components/Navbar';
 import styles from './page.module.css';
 
 interface SkillData {
@@ -194,342 +195,343 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.dashboard}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <span className={styles.headerLogo}>◆</span>
-          <div>
+      <Navbar />
+
+      <div className={styles.dashboardContent}>
+        {/* Header */}
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
             <h1 className={styles.headerTitle}>
               Hey {state.userName} <span className={styles.wave}>👋</span>
             </h1>
             <p className={styles.headerGoal}>{state.goal.title}</p>
           </div>
-        </div>
-        <div className={styles.headerRight}>
-          <div className={styles.streakBadge}>
-            <span className={`${styles.fireEmoji} animate-fire`}>🔥</span>
-            <div>
-              <span className={styles.streakNumber}>{state.consistency.streak_days}</span>
-              <span className={styles.streakLabel}>day streak</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Tabs */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'overview' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          Overview
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'skills' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('skills')}
-        >
-          Skills Map
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'email' ? styles.tabActive : ''}`}
-          onClick={() => { setActiveTab('email'); if (!email) generateEmail(); }}
-        >
-          Daily Email
-        </button>
-      </div>
-
-      {/* Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className={styles.grid}>
-          {/* Phase Progress */}
-          <div className={`${styles.card} glass-card animate-fade-in stagger-1`}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Phase Progress</h3>
-              <span className="badge badge-blue">{state.goal.current_phase}</span>
-            </div>
-            <div className={styles.phaseProgress}>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${state.goal.phase_progress_pct}%` }} />
+          <div className={styles.headerRight}>
+            <div className={styles.streakBadge}>
+              <span className={`${styles.fireEmoji} animate-fire`}>🔥</span>
+              <div>
+                <span className={styles.streakNumber}>{state.consistency.streak_days}</span>
+                <span className={styles.streakLabel}>day streak</span>
               </div>
-              <span className={styles.progressPct}>{state.goal.phase_progress_pct}%</span>
-            </div>
-            <div className={styles.phaseTimeline}>
-              {state.goal.phases?.map((phase, i) => (
-                <div
-                  key={i}
-                  className={`${styles.phaseItem} ${phase.status === 'active' ? styles.phaseActive : ''} ${phase.status === 'completed' ? styles.phaseCompleted : ''}`}
-                >
-                  <div className={styles.phaseDot} />
-                  <span className={styles.phaseLabel}>P{phase.number}</span>
-                </div>
-              ))}
             </div>
           </div>
+        </header>
 
-          {/* Skill Radar (simplified bar chart) */}
-          <div className={`${styles.card} glass-card animate-fade-in stagger-2`}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Skill Confidence</h3>
+        {/* Tabs */}
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tab} ${activeTab === 'overview' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            Overview
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'skills' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('skills')}
+          >
+            Skills Map
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'email' ? styles.tabActive : ''}`}
+            onClick={() => { setActiveTab('email'); if (!email) generateEmail(); }}
+          >
+            Daily Email
+          </button>
+        </div>
+
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className={styles.grid}>
+            {/* Phase Progress */}
+            <div className={`${styles.card} glass-card animate-fade-in stagger-1`}>
+              <div className={styles.cardHeader}>
+                <h3 className={styles.cardTitle}>Phase Progress</h3>
+                <span className="badge badge-blue">{state.goal.current_phase}</span>
+              </div>
+              <div className={styles.phaseProgress}>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${state.goal.phase_progress_pct}%` }} />
+                </div>
+                <span className={styles.progressPct}>{state.goal.phase_progress_pct}%</span>
+              </div>
+              <div className={styles.phaseTimeline}>
+                {state.goal.phases?.map((phase, i) => (
+                  <div
+                    key={i}
+                    className={`${styles.phaseItem} ${phase.status === 'active' ? styles.phaseActive : ''} ${phase.status === 'completed' ? styles.phaseCompleted : ''}`}
+                  >
+                    <div className={styles.phaseDot} />
+                    <span className={styles.phaseLabel}>P{phase.number}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className={styles.skillBars}>
-              {skillEntries.map(([name, skill]) => (
-                <div key={name} className={styles.skillBar}>
-                  <div className={styles.skillInfo}>
-                    <span className={styles.skillName}>{name}</span>
-                    <span className={styles.skillLevel} style={{ color: getConfidenceColor(skill.confidence) }}>
-                      {getConfidenceLabel(skill.confidence)}
+
+            {/* Skill Radar (simplified bar chart) */}
+            <div className={`${styles.card} glass-card animate-fade-in stagger-2`}>
+              <div className={styles.cardHeader}>
+                <h3 className={styles.cardTitle}>Skill Confidence</h3>
+              </div>
+              <div className={styles.skillBars}>
+                {skillEntries.map(([name, skill]) => (
+                  <div key={name} className={styles.skillBar}>
+                    <div className={styles.skillInfo}>
+                      <span className={styles.skillName}>{name}</span>
+                      <span className={styles.skillLevel} style={{ color: getConfidenceColor(skill.confidence) }}>
+                        {getConfidenceLabel(skill.confidence)}
+                      </span>
+                    </div>
+                    <div className={styles.skillTrack}>
+                      <div
+                        className={styles.skillFill}
+                        style={{
+                          width: `${(skill.confidence / maxConfidence) * 100}%`,
+                          background: getConfidenceColor(skill.confidence),
+                        }}
+                      />
+                      <span className={styles.skillScore}>{skill.confidence}/10</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Today's Challenge */}
+            <div className={`${styles.card} ${styles.challengeCard} glass-card animate-fade-in stagger-3`}>
+              <div className={styles.cardHeader}>
+                <h3 className={styles.cardTitle}>Today&apos;s Challenge</h3>
+                <span className="badge badge-violet">
+                  Difficulty: {state.predictions.recommended_challenge_difficulty}/10
+                </span>
+              </div>
+              {challenge ? (
+                <div className={styles.challengeContent}>
+                  {challenge.split('\n').map((line, i) => (
+                    <p key={i} className={line.startsWith('**') ? styles.challengeBold : styles.challengeLine}>
+                      {line.replace(/\*\*/g, '')}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.challengeEmpty}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={generateChallenge}
+                    disabled={isLoadingChallenge}
+                    id="generate-challenge"
+                  >
+                    {isLoadingChallenge ? 'Generating...' : '⚡ Generate Challenge'}
+                  </button>
+                  <p className={styles.challengeHint}>
+                    AI will create a personalized challenge based on your skill gaps
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Insights Panel */}
+            <div className={`${styles.card} glass-card animate-fade-in stagger-4`}>
+              <h3 className={styles.cardTitle}>Behavioral Insights</h3>
+              <div className={styles.insightGrid}>
+                <div className={styles.insight}>
+                  <span className={styles.insightIcon}>🧠</span>
+                  <div>
+                    <span className={styles.insightLabel}>Learning Style</span>
+                    <span className={styles.insightValue}>{state.patterns.learning_style}</span>
+                  </div>
+                </div>
+                <div className={styles.insight}>
+                  <span className={styles.insightIcon}>🎯</span>
+                  <div>
+                    <span className={styles.insightLabel}>Motivation</span>
+                    <span className={styles.insightValue}>{state.patterns.motivation_type}</span>
+                  </div>
+                </div>
+                <div className={styles.insight}>
+                  <span className={styles.insightIcon}>📊</span>
+                  <div>
+                    <span className={styles.insightLabel}>Avg. Study Time</span>
+                    <span className={styles.insightValue}>{state.patterns.avg_daily_study_minutes} min/day</span>
+                  </div>
+                </div>
+                <div className={styles.insight}>
+                  <span className={styles.insightIcon}>📈</span>
+                  <div>
+                    <span className={styles.insightLabel}>Active Days</span>
+                    <span className={styles.insightValue}>{state.consistency.this_week_active_days}/7 this week</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Burnout & Predictions */}
+            <div className={`${styles.card} glass-card animate-fade-in stagger-5`}>
+              <h3 className={styles.cardTitle}>Risk Meters</h3>
+              <div className={styles.meterGrid}>
+                <div className={styles.meter}>
+                  <div className={styles.meterHeader}>
+                    <span>Burnout Risk</span>
+                    <span style={{ color: getBurnoutColor(state.patterns.burnout_risk) }}>
+                      {Math.round(state.patterns.burnout_risk * 100)}%
                     </span>
                   </div>
-                  <div className={styles.skillTrack}>
+                  <div className="progress-bar">
                     <div
-                      className={styles.skillFill}
+                      className="progress-fill"
                       style={{
-                        width: `${(skill.confidence / maxConfidence) * 100}%`,
+                        width: `${state.patterns.burnout_risk * 100}%`,
+                        background: getBurnoutColor(state.patterns.burnout_risk),
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className={styles.meter}>
+                  <div className={styles.meterHeader}>
+                    <span>Dropout Risk</span>
+                    <span style={{ color: getBurnoutColor(state.predictions.dropout_risk) }}>
+                      {Math.round(state.predictions.dropout_risk * 100)}%
+                    </span>
+                  </div>
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{
+                        width: `${state.predictions.dropout_risk * 100}%`,
+                        background: getBurnoutColor(state.predictions.dropout_risk),
+                      }}
+                    />
+                  </div>
+                </div>
+                {state.predictions.next_breakthrough_topic && (
+                  <div className={styles.breakthrough}>
+                    <span className={styles.breakthroughIcon}>✨</span>
+                    <div>
+                      <span className={styles.breakthroughLabel}>Next Breakthrough</span>
+                      <span className={styles.breakthroughTopic}>{state.predictions.next_breakthrough_topic}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Avoidance & Errors */}
+            <div className={`${styles.card} glass-card animate-fade-in`}>
+              <h3 className={styles.cardTitle}>Patterns Detected</h3>
+              {state.patterns.avoidance_signals.length > 0 && (
+                <div className={styles.patternSection}>
+                  <h4 className={styles.patternLabel}>⚠️ Avoidance Patterns</h4>
+                  {state.patterns.avoidance_signals.map((topic, i) => (
+                    <div key={i} className={styles.avoidanceItem}>
+                      <span className="badge badge-amber">{topic}</span>
+                      <span className={styles.avoidanceText}>Not practiced in 5+ days</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {state.patterns.repeated_errors.length > 0 && (
+                <div className={styles.patternSection}>
+                  <h4 className={styles.patternLabel}>🔄 Repeated Errors</h4>
+                  {state.patterns.repeated_errors.map((err, i) => (
+                    <div key={i} className={styles.errorItem}>
+                      <span className="badge badge-rose">{err.topic}</span>
+                      <p className={styles.errorText}>{err.error} ({err.count}x)</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Skills Tab */}
+        {activeTab === 'skills' && (
+          <div className={`${styles.skillsTab} animate-fade-in`}>
+            <div className={styles.skillsHeader}>
+              <h2>Skill Confidence Map</h2>
+              <p className={styles.skillsSubtitle}>0-2 Awareness · 3-4 Beginner · 5-6 Developing · 7-8 Proficient · 9-10 Mastery</p>
+            </div>
+            <div className={styles.skillsGrid}>
+              {skillEntries.map(([name, skill]) => (
+                <div key={name} className={`${styles.skillCard} glass-card`}>
+                  <div className={styles.skillCardHeader}>
+                    <h3>{name}</h3>
+                    <div
+                      className={styles.skillBubble}
+                      style={{ background: getConfidenceColor(skill.confidence) }}
+                    >
+                      {skill.confidence}
+                    </div>
+                  </div>
+                  <div className={styles.skillMeta}>
+                    <div className={styles.skillMetaItem}>
+                      <span>Success Rate</span>
+                      <span>{Math.round(skill.success_rate * 100)}%</span>
+                    </div>
+                    <div className={styles.skillMetaItem}>
+                      <span>Times Tested</span>
+                      <span>{skill.times_tested}</span>
+                    </div>
+                    <div className={styles.skillMetaItem}>
+                      <span>Level</span>
+                      <span style={{ color: getConfidenceColor(skill.confidence) }}>
+                        {getConfidenceLabel(skill.confidence)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.skillBarFull}>
+                    <div
+                      className={styles.skillBarFillFull}
+                      style={{
+                        width: `${(skill.confidence / 10) * 100}%`,
                         background: getConfidenceColor(skill.confidence),
                       }}
                     />
-                    <span className={styles.skillScore}>{skill.confidence}/10</span>
                   </div>
+                  {skill.confidence >= 7 && skill.success_rate >= 0.75 && skill.times_tested >= 5 && (
+                    <div className={styles.masteryBadge}>✅ Confirmed Mastery</div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
+        )}
 
-          {/* Today's Challenge */}
-          <div className={`${styles.card} ${styles.challengeCard} glass-card animate-fade-in stagger-3`}>
-            <div className={styles.cardHeader}>
-              <h3 className={styles.cardTitle}>Today&apos;s Challenge</h3>
-              <span className="badge badge-violet">
-                Difficulty: {state.predictions.recommended_challenge_difficulty}/10
-              </span>
-            </div>
-            {challenge ? (
-              <div className={styles.challengeContent}>
-                {challenge.split('\n').map((line, i) => (
-                  <p key={i} className={line.startsWith('**') ? styles.challengeBold : styles.challengeLine}>
-                    {line.replace(/\*\*/g, '')}
-                  </p>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.challengeEmpty}>
-                <button
-                  className="btn btn-primary"
-                  onClick={generateChallenge}
-                  disabled={isLoadingChallenge}
-                  id="generate-challenge"
-                >
-                  {isLoadingChallenge ? 'Generating...' : '⚡ Generate Challenge'}
-                </button>
-                <p className={styles.challengeHint}>
-                  AI will create a personalized challenge based on your skill gaps
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Insights Panel */}
-          <div className={`${styles.card} glass-card animate-fade-in stagger-4`}>
-            <h3 className={styles.cardTitle}>Behavioral Insights</h3>
-            <div className={styles.insightGrid}>
-              <div className={styles.insight}>
-                <span className={styles.insightIcon}>🧠</span>
-                <div>
-                  <span className={styles.insightLabel}>Learning Style</span>
-                  <span className={styles.insightValue}>{state.patterns.learning_style}</span>
+        {/* Email Tab */}
+        {activeTab === 'email' && (
+          <div className={`${styles.emailTab} animate-fade-in`}>
+            <div className={styles.emailPreview}>
+              <div className={styles.emailHeader}>
+                <div className={styles.emailMeta}>
+                  <span className={styles.emailFrom}>From: StudentCopilot</span>
+                  <span className={styles.emailSubject}>📌 Day {state.consistency.streak_days} — Your challenge is ready</span>
                 </div>
               </div>
-              <div className={styles.insight}>
-                <span className={styles.insightIcon}>🎯</span>
-                <div>
-                  <span className={styles.insightLabel}>Motivation</span>
-                  <span className={styles.insightValue}>{state.patterns.motivation_type}</span>
-                </div>
-              </div>
-              <div className={styles.insight}>
-                <span className={styles.insightIcon}>📊</span>
-                <div>
-                  <span className={styles.insightLabel}>Avg. Study Time</span>
-                  <span className={styles.insightValue}>{state.patterns.avg_daily_study_minutes} min/day</span>
-                </div>
-              </div>
-              <div className={styles.insight}>
-                <span className={styles.insightIcon}>📈</span>
-                <div>
-                  <span className={styles.insightLabel}>Active Days</span>
-                  <span className={styles.insightValue}>{state.consistency.this_week_active_days}/7 this week</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Burnout & Predictions */}
-          <div className={`${styles.card} glass-card animate-fade-in stagger-5`}>
-            <h3 className={styles.cardTitle}>Risk Meters</h3>
-            <div className={styles.meterGrid}>
-              <div className={styles.meter}>
-                <div className={styles.meterHeader}>
-                  <span>Burnout Risk</span>
-                  <span style={{ color: getBurnoutColor(state.patterns.burnout_risk) }}>
-                    {Math.round(state.patterns.burnout_risk * 100)}%
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${state.patterns.burnout_risk * 100}%`,
-                      background: getBurnoutColor(state.patterns.burnout_risk),
-                    }}
-                  />
-                </div>
-              </div>
-              <div className={styles.meter}>
-                <div className={styles.meterHeader}>
-                  <span>Dropout Risk</span>
-                  <span style={{ color: getBurnoutColor(state.predictions.dropout_risk) }}>
-                    {Math.round(state.predictions.dropout_risk * 100)}%
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{
-                      width: `${state.predictions.dropout_risk * 100}%`,
-                      background: getBurnoutColor(state.predictions.dropout_risk),
-                    }}
-                  />
-                </div>
-              </div>
-              {state.predictions.next_breakthrough_topic && (
-                <div className={styles.breakthrough}>
-                  <span className={styles.breakthroughIcon}>✨</span>
-                  <div>
-                    <span className={styles.breakthroughLabel}>Next Breakthrough</span>
-                    <span className={styles.breakthroughTopic}>{state.predictions.next_breakthrough_topic}</span>
+              <div className={styles.emailBody}>
+                {email ? (
+                  email.split('\n').map((line, i) => (
+                    <p key={i} className={line.startsWith('📖') || line.startsWith('🔨') || line.startsWith('🔄') || line.startsWith('🔥') ? styles.emailHighlight : ''}>
+                      {line}
+                    </p>
+                  ))
+                ) : (
+                  <div className={styles.emailEmpty}>
+                    <div className={styles.loadingSpinner} />
+                    <p>Generating your daily email...</p>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Avoidance & Errors */}
-          <div className={`${styles.card} glass-card animate-fade-in`}>
-            <h3 className={styles.cardTitle}>Patterns Detected</h3>
-            {state.patterns.avoidance_signals.length > 0 && (
-              <div className={styles.patternSection}>
-                <h4 className={styles.patternLabel}>⚠️ Avoidance Patterns</h4>
-                {state.patterns.avoidance_signals.map((topic, i) => (
-                  <div key={i} className={styles.avoidanceItem}>
-                    <span className="badge badge-amber">{topic}</span>
-                    <span className={styles.avoidanceText}>Not practiced in 5+ days</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {state.patterns.repeated_errors.length > 0 && (
-              <div className={styles.patternSection}>
-                <h4 className={styles.patternLabel}>🔄 Repeated Errors</h4>
-                {state.patterns.repeated_errors.map((err, i) => (
-                  <div key={i} className={styles.errorItem}>
-                    <span className="badge badge-rose">{err.topic}</span>
-                    <p className={styles.errorText}>{err.error} ({err.count}x)</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Skills Tab */}
-      {activeTab === 'skills' && (
-        <div className={`${styles.skillsTab} animate-fade-in`}>
-          <div className={styles.skillsHeader}>
-            <h2>Skill Confidence Map</h2>
-            <p className={styles.skillsSubtitle}>0-2 Awareness · 3-4 Beginner · 5-6 Developing · 7-8 Proficient · 9-10 Mastery</p>
-          </div>
-          <div className={styles.skillsGrid}>
-            {skillEntries.map(([name, skill]) => (
-              <div key={name} className={`${styles.skillCard} glass-card`}>
-                <div className={styles.skillCardHeader}>
-                  <h3>{name}</h3>
-                  <div
-                    className={styles.skillBubble}
-                    style={{ background: getConfidenceColor(skill.confidence) }}
-                  >
-                    {skill.confidence}
-                  </div>
-                </div>
-                <div className={styles.skillMeta}>
-                  <div className={styles.skillMetaItem}>
-                    <span>Success Rate</span>
-                    <span>{Math.round(skill.success_rate * 100)}%</span>
-                  </div>
-                  <div className={styles.skillMetaItem}>
-                    <span>Times Tested</span>
-                    <span>{skill.times_tested}</span>
-                  </div>
-                  <div className={styles.skillMetaItem}>
-                    <span>Level</span>
-                    <span style={{ color: getConfidenceColor(skill.confidence) }}>
-                      {getConfidenceLabel(skill.confidence)}
-                    </span>
-                  </div>
-                </div>
-                <div className={styles.skillBarFull}>
-                  <div
-                    className={styles.skillBarFillFull}
-                    style={{
-                      width: `${(skill.confidence / 10) * 100}%`,
-                      background: getConfidenceColor(skill.confidence),
-                    }}
-                  />
-                </div>
-                {skill.confidence >= 7 && skill.success_rate >= 0.75 && skill.times_tested >= 5 && (
-                  <div className={styles.masteryBadge}>✅ Confirmed Mastery</div>
                 )}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Email Tab */}
-      {activeTab === 'email' && (
-        <div className={`${styles.emailTab} animate-fade-in`}>
-          <div className={styles.emailPreview}>
-            <div className={styles.emailHeader}>
-              <div className={styles.emailMeta}>
-                <span className={styles.emailFrom}>From: StudentCopilot</span>
-                <span className={styles.emailSubject}>📌 Day {state.consistency.streak_days} — Your challenge is ready</span>
-              </div>
             </div>
-            <div className={styles.emailBody}>
-              {email ? (
-                email.split('\n').map((line, i) => (
-                  <p key={i} className={line.startsWith('📖') || line.startsWith('🔨') || line.startsWith('🔄') || line.startsWith('🔥') ? styles.emailHighlight : ''}>
-                    {line}
-                  </p>
-                ))
-              ) : (
-                <div className={styles.emailEmpty}>
-                  <div className={styles.loadingSpinner} />
-                  <p>Generating your daily email...</p>
-                </div>
-              )}
-            </div>
+            <button
+              className="btn btn-secondary"
+              onClick={generateEmail}
+              disabled={isLoadingEmail}
+              style={{ marginTop: '16px' }}
+            >
+              {isLoadingEmail ? 'Regenerating...' : '🔄 Regenerate Email'}
+            </button>
           </div>
-          <button
-            className="btn btn-secondary"
-            onClick={generateEmail}
-            disabled={isLoadingEmail}
-            style={{ marginTop: '16px' }}
-          >
-            {isLoadingEmail ? 'Regenerating...' : '🔄 Regenerate Email'}
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

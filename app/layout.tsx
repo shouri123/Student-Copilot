@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from '../lib/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: "Adaptive Student Copilot — AI-Powered Learning Mentor",
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="mesh-bg" />
-        {children}
+        <AuthProvider>
+          <div className="mesh-bg" />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
