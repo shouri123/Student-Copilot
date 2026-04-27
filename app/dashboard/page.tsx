@@ -120,7 +120,7 @@ export default function DashboardPage() {
   const [state, setState] = useState<UserState | null>(null);
   const [challenge, setChallenge] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'competitive' | 'integrations' | 'resources' | 'email'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'competitive' | 'integrations' | 'resources' | 'projects' | 'email'>('overview');
   const [isLoadingChallenge, setIsLoadingChallenge] = useState(false);
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
 
@@ -246,6 +246,7 @@ export default function DashboardPage() {
           <button className={`${styles.tab} ${activeTab === 'competitive' ? styles.tabActive : ''}`} onClick={() => setActiveTab('competitive')}>Competitive</button>
           <button className={`${styles.tab} ${activeTab === 'integrations' ? styles.tabActive : ''}`} onClick={() => setActiveTab('integrations')}>Integrations</button>
           <button className={`${styles.tab} ${activeTab === 'resources' ? styles.tabActive : ''}`} onClick={() => setActiveTab('resources')}>Resources</button>
+          <button className={`${styles.tab} ${activeTab === 'projects' ? styles.tabActive : ''}`} onClick={() => setActiveTab('projects')}>Projects</button>
           <button className={`${styles.tab} ${activeTab === 'email' ? styles.tabActive : ''}`} onClick={() => { setActiveTab('email'); if (!email) generateEmail(); }}>Daily Email</button>
         </div>
 
@@ -502,6 +503,44 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '12px' }}>Open</button>
+                </div>
+              </div>
+           </div>
+        )}
+
+        {/* Projects Tab */}
+        {activeTab === 'projects' && (
+           <div className={`animate-fade-in`}>
+              <h2>Project Suggestions</h2>
+              <p className={styles.skillsSubtitle}>Curated projects to build your portfolio and test your skills.</p>
+              
+              <div className={styles.integrationsGrid}>
+                <div className={styles.integrationCard} style={{ alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div className={styles.integrationIcon} style={{ background: 'var(--accent-emerald)', color: '#000' }}>🛒</div>
+                  <span className={styles.integrationName}>E-Commerce Recommendation Engine</span>
+                  <p className={styles.integrationDesc}>Build a collaborative filtering system using Python and Pandas. Recommend items based on user purchase history.</p>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                    <span className="badge badge-emerald">Beginner</span>
+                    <span className="badge badge-blue">Python</span>
+                  </div>
+                </div>
+                <div className={styles.integrationCard} style={{ alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div className={styles.integrationIcon} style={{ background: 'var(--accent-blue)', color: '#000' }}>📊</div>
+                  <span className={styles.integrationName}>Stock Price Predictor</span>
+                  <p className={styles.integrationDesc}>Use Scikit-learn to train a Random Forest model on historical stock data to predict future trends.</p>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                    <span className="badge badge-blue">Intermediate</span>
+                    <span className="badge badge-violet">ML Core</span>
+                  </div>
+                </div>
+                <div className={styles.integrationCard} style={{ alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div className={styles.integrationIcon} style={{ background: 'var(--accent-violet)', color: '#fff' }}>🤖</div>
+                  <span className={styles.integrationName}>Custom LLM Chatbot</span>
+                  <p className={styles.integrationDesc}>Fine-tune a lightweight transformer model to answer questions about a specific domain (e.g. medical or legal text).</p>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
+                    <span className="badge badge-violet">Advanced</span>
+                    <span className="badge badge-amber">Deep Learning</span>
+                  </div>
                 </div>
               </div>
            </div>
