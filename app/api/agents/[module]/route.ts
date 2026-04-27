@@ -5,10 +5,11 @@ import { AgentType } from '../../../../lib/types';
 
 export async function POST(
   request: Request,
-  { params }: { params: { module: string } }
+  { params }: { params: Promise<{ module: string }> }
 ) {
   try {
-    const agentModule = params.module as AgentType;
+    const resolvedParams = await params;
+    const agentModule = resolvedParams.module as AgentType;
     const body = await request.json();
     const { userId, userName, context } = body;
 
