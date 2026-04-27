@@ -2,63 +2,73 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
 import { useRouter } from 'next/navigation';
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut,
+  updateProfile,
+  User
+} from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 interface AuthContextType {
   userId: string | null;
   userName: string | null;
-  login: (id: string, name?: string) => void;
-  logout: () => void;
-  signup: (name: string) => string; // returns new userId
+  login: (email: string, pass: string) => Promise<void>;
+  logout: () => Promise<void>;
+  signup: (name: string, email: string, pass: string) => Promise<void>;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Load from localStorage on mount
-    const savedId = localStorage.getItem('student_copilot_user_id');
-    const savedName = localStorage.getItem('student_copilot_user_name');
-    if (savedId) {
-      setUserId(savedId);
-      setUserName(savedName || 'Student');
-    }
-    setIsInitialized(true);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const login = (id: string, name?: string) => {
-    setUserId(id);
-    setUserName(name || 'Student');
-    localStorage.setItem('student_copilot_user_id', id);
-    if (name) localStorage.setItem('student_copilot_user_name', name);
+  const login = async (email: string, pass: string) => {
+    await signInWithEmailAndPassword(auth, email, pass);
     router.push('/dashboard');
   };
 
-  const logout = () => {
-    setUserId(null);
-    setUserName(null);
-    localStorage.removeItem('student_copilot_user_id');
-    localStorage.removeItem('student_copilot_user_name');
+  const logout = async () => {
+    await signOut(auth);
     router.push('/');
   };
 
-  const signup = (name: string) => {
-    const newId = `user_${Math.random().toString(36).substr(2, 9)}`;
-    setUserId(newId);
-    setUserName(name);
-    localStorage.setItem('student_copilot_user_id', newId);
-    localStorage.setItem('student_copilot_user_name', name);
-    return newId;
+  const signup = async (name: string, email: string, pass: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+    // Force a state refresh for the user object
+    setUser({ ...userCredential.user, displayName: name });
+    router.push('/dashboard');
   };
 
   return (
-    <AuthContext.Provider value={{ userId, userName, login, logout, signup, isAuthenticated: !!userId }}>
-      {isInitialized ? children : null}
+    <AuthContext.Provider value={{ 
+      userId: user?.uid || null, 
+      userName: user?.displayName || user?.email?.split('@')[0] || null, 
+      login, 
+      logout, 
+      signup, 
+      isAuthenticated: !!user,
+      isLoading
+    }}>
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 }

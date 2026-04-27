@@ -10,22 +10,21 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Mock login logic
-    if (email && password) {
-      login(email, email.split('@')[0]);
+    try {
+      await login(email, password);
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -41,6 +40,21 @@ export default function LoginPage() {
           <h1 className={styles.title}>Welcome back to the Atelier</h1>
           <p className={styles.subtitle}>Enter your credentials to continue your growth cycle.</p>
         </div>
+
+        {error && (
+          <div className="error-banner" style={{ 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#ef4444',
+            padding: '12px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            marginBottom: '16px',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>

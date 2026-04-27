@@ -12,21 +12,21 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [goal, setGoal] = useState('tech');
   const [isLoading, setIsLoading] = useState(false);
-  const { signup, login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const { signup } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock signup logic
-    const newId = signup(name);
-    login(newId, name);
-    
-    setIsLoading(false);
+    try {
+      await signup(name, email, password);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,6 +42,21 @@ export default function SignupPage() {
           <h1 className={styles.title}>Join the Elite Learning Residency</h1>
           <p className={styles.subtitle}>Commit to a long-term goal. Let the agents handle the growth engineering.</p>
         </div>
+
+        {error && (
+          <div className="error-banner" style={{ 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#ef4444',
+            padding: '12px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            marginBottom: '16px',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
 
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>

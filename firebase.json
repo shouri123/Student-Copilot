@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Student Copilot Auth",
+        "supportEmail": "chakrabortyshouri@gmail.com"
+      }
+    }
+  }
+}
