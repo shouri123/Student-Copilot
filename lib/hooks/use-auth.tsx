@@ -8,6 +8,9 @@ import {
   createUserWithEmailAndPassword, 
   signOut,
   updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
   User
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -16,6 +19,8 @@ interface AuthContextType {
   userId: string | null;
   userName: string | null;
   login: (email: string, pass: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
   logout: () => Promise<void>;
   signup: (name: string, email: string, pass: string) => Promise<void>;
   isAuthenticated: boolean;
@@ -43,6 +48,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/dashboard');
   };
 
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+    router.push('/dashboard');
+  };
+
+  const loginWithGithub = async () => {
+    const provider = new GithubAuthProvider();
+    await signInWithPopup(auth, provider);
+    router.push('/dashboard');
+  };
+
   const logout = async () => {
     await signOut(auth);
     router.push('/');
@@ -63,6 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       userId: user?.uid || null, 
       userName: user?.displayName || user?.email?.split('@')[0] || null, 
       login, 
+      loginWithGoogle,
+      loginWithGithub,
       logout, 
       signup, 
       isAuthenticated: !!user,
